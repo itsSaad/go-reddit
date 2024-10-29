@@ -35,9 +35,11 @@ func setup(t testing.TB) (*Client, *http.ServeMux) {
 	})
 	client, _ := NewClient(
 		Credentials{"client_id", "client_secret", "", ""},
-		WithAccessToken("access_token_value"),
+		//WithAccessToken("access_token_value"),
 	)
-
+	client.InitializeClientIdClientSecret("client_id_value", "client_secret_value")
+	client.InitializeUserAgent("user_agent_value")
+	client.InitializeAccessToken("access_token_value")
 	return client, mux
 }
 
@@ -57,10 +59,14 @@ func setupAsync(t testing.TB) (*Client, *http.ServeMux) {
 		w.Header().Add(headerContentType, mediaTypeJSON)
 		fmt.Fprint(w, response)
 	})
+	fmt.Println("server.URL:", server.URL)
 	client, _ := NewClientAsync(
 		WithBaseURL("proxy_base_url"),
-		WithBearerAuth("proxy_api_key"),
+		//WithBearerAuth("proxy_api_key"),
 	)
+
+	client.InitializeClientIdClientSecret("client_id_value", "client_secret_value")
+	client.InitializeBearerToken("bearer_token_value")
 
 	return client, mux
 }

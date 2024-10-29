@@ -106,6 +106,34 @@ type Client struct {
 	onRequestCompleted RequestCompletionCallback
 }
 
+func (c *Client) InitializeClientIdClientSecret(clientId, clientSecret string) {
+	c.ID = clientId
+	c.Secret = clientSecret
+}
+func (c *Client) InitializeBearerToken(bearerToken string) {
+
+	authorizationTransport := &authorizationTransport{
+		Bearer: bearerToken,
+		Base:   c.client.Transport,
+	}
+	c.client.Transport = authorizationTransport
+}
+
+func (c *Client) InitializeUserAgent(userAgent string) {
+
+	userAgentTransport := &userAgentTransport{
+		userAgent: userAgent,
+		Base:      c.client.Transport,
+	}
+	c.client.Transport = userAgentTransport
+}
+
+func (c *Client) InitializeAccessToken(accessToken string) {
+
+	oauthTransport := oauthTransport(c, accessToken)
+	c.client.Transport = oauthTransport
+}
+
 // OnRequestCompleted sets the client's request completion callback.
 func (c *Client) OnRequestCompleted(rc RequestCompletionCallback) {
 	c.onRequestCompleted = rc
@@ -158,18 +186,18 @@ func NewClient(credentials Credentials, opts ...Opt) (*Client, error) {
 		}
 	}
 
-	userAgentTransport := &userAgentTransport{
-		userAgent: client.UserAgent(),
-		Base:      client.client.Transport,
-	}
-	client.client.Transport = userAgentTransport
-
-	if client.client.CheckRedirect == nil {
-		client.client.CheckRedirect = client.redirect
-	}
-
-	oauthTransport := oauthTransport(client)
-	client.client.Transport = oauthTransport
+	//userAgentTransport := &userAgentTransport{
+	//	userAgent: client.UserAgent(),
+	//	Base:      client.client.Transport,
+	//}
+	//client.client.Transport = userAgentTransport
+	//
+	//if client.client.CheckRedirect == nil {
+	//	client.client.CheckRedirect = client.redirect
+	//}
+	//
+	//oauthTransport := oauthTransport(client)
+	//client.client.Transport = oauthTransport
 	return client, nil
 }
 
@@ -186,15 +214,15 @@ func NewClientAsync(opts ...Opt) (*Client, error) {
 		}
 	}
 
-	authorizationTransport := &authorizationTransport{
-		Bearer: client.BearerToken,
-		Base:   client.client.Transport,
-	}
-	client.client.Transport = authorizationTransport
-
-	if client.client.CheckRedirect == nil {
-		client.client.CheckRedirect = client.redirect
-	}
+	//authorizationTransport := &authorizationTransport{
+	//	Bearer: client.BearerToken,
+	//	Base:   client.client.Transport,
+	//}
+	//client.client.Transport = authorizationTransport
+	//
+	//if client.client.CheckRedirect == nil {
+	//	client.client.CheckRedirect = client.redirect
+	//}
 
 	return client, nil
 }
