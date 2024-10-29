@@ -2,6 +2,7 @@ package reddit
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -34,6 +35,13 @@ func WithUserAgent(ua string) Opt {
 func WithAccessToken(accessToken string) Opt {
 	return func(c *Client) error {
 		c.AccessToken = accessToken
+		return nil
+	}
+}
+
+func WithBearerAuth(bearerToken string) Opt {
+	return func(c *Client) error {
+		c.BearerToken = fmt.Sprint("Bearer ", bearerToken)
 		return nil
 	}
 }

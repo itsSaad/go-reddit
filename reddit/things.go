@@ -33,6 +33,10 @@ type anchor interface {
 	After() string
 }
 
+type JobResponse struct {
+	JobID string `json:"job_id"`
+}
+
 // thing is an entity on Reddit.
 // Its kind reprsents what it is and what is stored in the Data field.
 // e.g. t1 = comment, t2 = user, t3 = post, etc.

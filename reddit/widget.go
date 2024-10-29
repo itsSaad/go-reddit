@@ -419,7 +419,7 @@ func (s *WidgetService) Get(ctx context.Context, subreddit string) ([]Widget, *R
 	root := new(struct {
 		Widgets WidgetList `json:"items"`
 	})
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -440,7 +440,7 @@ func (s *WidgetService) Create(ctx context.Context, subreddit string, request Wi
 	}
 
 	root := new(rootWidget)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -455,7 +455,7 @@ func (s *WidgetService) Delete(ctx context.Context, subreddit, id string) (*Resp
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Reorder the widgets in the subreddit.
@@ -467,5 +467,5 @@ func (s *WidgetService) Reorder(ctx context.Context, subreddit string, ids []str
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }

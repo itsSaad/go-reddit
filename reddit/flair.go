@@ -149,7 +149,7 @@ func (s *FlairService) GetUserFlairs(ctx context.Context, subreddit string) ([]*
 	}
 
 	var flairs []*Flair
-	resp, err := s.client.Do(ctx, req, &flairs)
+	resp, err := s.client.Do(ctx, req, &flairs, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -167,7 +167,7 @@ func (s *FlairService) GetPostFlairs(ctx context.Context, subreddit string) ([]*
 	}
 
 	var flairs []*Flair
-	resp, err := s.client.Do(ctx, req, &flairs)
+	resp, err := s.client.Do(ctx, req, &flairs, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -187,7 +187,7 @@ func (s *FlairService) ListUserFlairs(ctx context.Context, subreddit string) ([]
 	root := new(struct {
 		UserFlairs []*FlairSummary `json:"users"`
 	})
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -214,7 +214,7 @@ func (s *FlairService) Configure(ctx context.Context, subreddit string, request 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Enable your flair in the subreddit.
@@ -230,7 +230,7 @@ func (s *FlairService) Enable(ctx context.Context, subreddit string) (*Response,
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Disable your flair in the subreddit.
@@ -246,7 +246,7 @@ func (s *FlairService) Disable(ctx context.Context, subreddit string) (*Response
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UpsertUserTemplate creates a user flair template, or updates it if the request.ID is valid.
@@ -271,7 +271,7 @@ func (s *FlairService) UpsertUserTemplate(ctx context.Context, subreddit string,
 	}
 
 	root := new(FlairTemplate)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -301,7 +301,7 @@ func (s *FlairService) UpsertPostTemplate(ctx context.Context, subreddit string,
 	}
 
 	root := new(FlairTemplate)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -322,7 +322,7 @@ func (s *FlairService) Delete(ctx context.Context, subreddit, username string) (
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // DeleteTemplate deletes the flair template via its id.
@@ -338,7 +338,7 @@ func (s *FlairService) DeleteTemplate(ctx context.Context, subreddit, id string)
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // DeleteAllUserTemplates deletes all user flair templates.
@@ -354,7 +354,7 @@ func (s *FlairService) DeleteAllUserTemplates(ctx context.Context, subreddit str
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // DeleteAllPostTemplates deletes all post flair templates.
@@ -370,7 +370,7 @@ func (s *FlairService) DeleteAllPostTemplates(ctx context.Context, subreddit str
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // ReorderUserTemplates reorders the user flair templates in the order provided in the slice.
@@ -381,7 +381,7 @@ func (s *FlairService) ReorderUserTemplates(ctx context.Context, subreddit strin
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // ReorderPostTemplates reorders the post flair templates in the order provided in the slice.
@@ -392,7 +392,7 @@ func (s *FlairService) ReorderPostTemplates(ctx context.Context, subreddit strin
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Choices returns a list of flairs you can assign to yourself in the subreddit, and your current one.
@@ -439,7 +439,7 @@ func (s *FlairService) choices(ctx context.Context, path string, form url.Values
 		Choices []*FlairChoice `json:"choices"`
 		Current *FlairChoice   `json:"current"`
 	})
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, nil, resp, err
 	}
@@ -473,7 +473,7 @@ func (s *FlairService) Assign(ctx context.Context, subreddit, user string, reque
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // SelectForPost assigns a flair to the post.
@@ -497,7 +497,7 @@ func (s *FlairService) SelectForPost(ctx context.Context, postID string, request
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // RemoveFromPost removes the flair from the post.
@@ -514,7 +514,7 @@ func (s *FlairService) RemoveFromPost(ctx context.Context, postID string) (*Resp
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Change the flair of multiple users in the subreddit at once.
@@ -553,7 +553,7 @@ func (s *FlairService) Change(ctx context.Context, subreddit string, requests []
 	}
 
 	var root []*FlairChangeResponse
-	resp, err := s.client.Do(ctx, req, &root)
+	resp, err := s.client.Do(ctx, req, &root, false)
 	if err != nil {
 		return nil, resp, err
 	}

@@ -115,7 +115,7 @@ func (s *MessageService) ReadAll(ctx context.Context) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Read marks a message/comment as read via its full ID.
@@ -134,7 +134,7 @@ func (s *MessageService) Read(ctx context.Context, ids ...string) (*Response, er
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Unread marks a message/comment as unread via its full ID.
@@ -153,7 +153,7 @@ func (s *MessageService) Unread(ctx context.Context, ids ...string) (*Response, 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Block the author of a post, comment or message via its full ID.
@@ -168,7 +168,7 @@ func (s *MessageService) Block(ctx context.Context, id string) (*Response, error
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Collapse messages.
@@ -187,7 +187,7 @@ func (s *MessageService) Collapse(ctx context.Context, ids ...string) (*Response
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Uncollapse messages.
@@ -206,7 +206,7 @@ func (s *MessageService) Uncollapse(ctx context.Context, ids ...string) (*Respon
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Delete a message.
@@ -221,7 +221,7 @@ func (s *MessageService) Delete(ctx context.Context, id string) (*Response, erro
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Send a message.
@@ -243,7 +243,7 @@ func (s *MessageService) Send(ctx context.Context, sendRequest *SendMessageReque
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Inbox returns comments and messages that appear in your inbox, respectively.
@@ -285,7 +285,7 @@ func (s *MessageService) inbox(ctx context.Context, path string, opts *ListOptio
 	}
 
 	root := new(inboxListing)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, nil, err
 	}

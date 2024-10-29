@@ -30,9 +30,10 @@ const (
 	mediaTypeJSON = "application/json"
 	mediaTypeForm = "application/x-www-form-urlencoded"
 
-	headerContentType = "Content-Type"
-	headerAccept      = "Accept"
-	headerUserAgent   = "User-Agent"
+	headerContentType   = "Content-Type"
+	headerAccept        = "Accept"
+	headerUserAgent     = "User-Agent"
+	headerAuthorization = "Authorization"
 
 	headerRateLimitRemaining = "x-ratelimit-remaining"
 	headerRateLimitUsed      = "x-ratelimit-used"
@@ -76,6 +77,8 @@ type Client struct {
 	Password string
 
 	AccessToken string
+
+	BearerToken string
 
 	// This is the client's user ID in Reddit's database.
 	redditID string
@@ -167,6 +170,31 @@ func NewClient(credentials Credentials, opts ...Opt) (*Client, error) {
 
 	oauthTransport := oauthTransport(client)
 	client.client.Transport = oauthTransport
+	return client, nil
+}
+
+// NewClient returns a new Reddit API client.
+// Use an Opt to configure the client credentials, such as WithHTTPClient or WithUserAgent.
+// If the FromEnv option is used with the correct environment variables, an empty struct can
+// be passed in as the credentials, since they will be overridden.
+func NewClientAsync(opts ...Opt) (*Client, error) {
+	client := newClient()
+
+	for _, opt := range opts {
+		if err := opt(client); err != nil {
+			return nil, err
+		}
+	}
+
+	authorizationTransport := &authorizationTransport{
+		Bearer: client.BearerToken,
+		Base:   client.client.Transport,
+	}
+	client.client.Transport = authorizationTransport
+
+	if client.client.CheckRedirect == nil {
+		client.client.CheckRedirect = client.redirect
+	}
 
 	return client, nil
 }
@@ -305,6 +333,9 @@ type Response struct {
 
 	// Rate limit information.
 	Rate Rate
+
+	// JobId async job id.
+	JobId string
 }
 
 // newResponse creates a new Response for the provided http.Response.
@@ -316,6 +347,10 @@ func newResponse(r *http.Response) *Response {
 
 func (r *Response) populateAnchors(a anchor) {
 	r.After = a.After()
+}
+
+func (r *Response) jobResponse(job JobResponse) {
+	r.JobId = job.JobID
 }
 
 // parseRate parses the rate related headers.
@@ -339,7 +374,7 @@ func parseRate(r *http.Response) Rate {
 // Do sends an API request and returns the API response. The API response is JSON decoded and stored in the value
 // pointed to by v, or returned as an error if an API error has occurred. If v implements the io.Writer interface,
 // the raw response will be written to v, without attempting to decode it.
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}, isJob bool) (*Response, error) {
 	if err := c.checkRateLimitBeforeDo(req); err != nil {
 		return &Response{
 			Response: err.Response,
@@ -383,6 +418,15 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 		if anchor, ok := v.(anchor); ok {
 			response.populateAnchors(anchor)
+		}
+	}
+	if isJob {
+		var job JobResponse
+		err = json.NewDecoder(response.Body).Decode(&job)
+		if err != nil {
+			return response, err
+		} else {
+			response.jobResponse(job)
 		}
 	}
 
@@ -505,7 +549,7 @@ func (c *Client) getThing(ctx context.Context, path string, opts interface{}) (*
 	}
 
 	t := new(thing)
-	resp, err := c.Do(ctx, req, t)
+	resp, err := c.Do(ctx, req, t, false)
 	if err != nil {
 		return nil, resp, err
 	}

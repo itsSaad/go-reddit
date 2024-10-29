@@ -68,7 +68,7 @@ func (s *CollectionService) Get(ctx context.Context, id string) (*Collection, *R
 	}
 
 	collection := new(Collection)
-	resp, err := s.client.Do(ctx, req, collection)
+	resp, err := s.client.Do(ctx, req, collection, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -95,7 +95,7 @@ func (s *CollectionService) FromSubreddit(ctx context.Context, id string) ([]*Co
 	}
 
 	var collections []*Collection
-	resp, err := s.client.Do(ctx, req, &collections)
+	resp, err := s.client.Do(ctx, req, &collections, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -122,7 +122,7 @@ func (s *CollectionService) Create(ctx context.Context, createRequest *Collectio
 	}
 
 	collection := new(Collection)
-	resp, err := s.client.Do(ctx, req, collection)
+	resp, err := s.client.Do(ctx, req, collection, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -142,7 +142,7 @@ func (s *CollectionService) Delete(ctx context.Context, id string) (*Response, e
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // AddPost adds a post (via its full ID) to a collection (via its id).
@@ -158,7 +158,7 @@ func (s *CollectionService) AddPost(ctx context.Context, postID, collectionID st
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // RemovePost removes a post (via its full ID) from a collection (via its id).
@@ -174,7 +174,7 @@ func (s *CollectionService) RemovePost(ctx context.Context, postID, collectionID
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // ReorderPosts reorders posts in a collection.
@@ -190,7 +190,7 @@ func (s *CollectionService) ReorderPosts(ctx context.Context, collectionID strin
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UpdateTitle updates a collection's title.
@@ -206,7 +206,7 @@ func (s *CollectionService) UpdateTitle(ctx context.Context, id string, title st
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UpdateDescription updates a collection's description.
@@ -222,7 +222,7 @@ func (s *CollectionService) UpdateDescription(ctx context.Context, id string, de
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UpdateLayoutTimeline updates a collection's layout to the timeline format.
@@ -238,7 +238,7 @@ func (s *CollectionService) UpdateLayoutTimeline(ctx context.Context, id string)
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UpdateLayoutGallery updates a collection's layout to the gallery format.
@@ -254,7 +254,7 @@ func (s *CollectionService) UpdateLayoutGallery(ctx context.Context, id string) 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Follow a collection.
@@ -270,7 +270,7 @@ func (s *CollectionService) Follow(ctx context.Context, id string) (*Response, e
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Unfollow a collection.
@@ -286,5 +286,5 @@ func (s *CollectionService) Unfollow(ctx context.Context, id string) (*Response,
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }

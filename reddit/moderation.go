@@ -121,7 +121,7 @@ func (s *ModerationService) AcceptInvite(ctx context.Context, subreddit string) 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Approve a post or comment via its full ID.
@@ -136,7 +136,7 @@ func (s *ModerationService) Approve(ctx context.Context, id string) (*Response, 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Remove a post, comment or modmail message via its full ID.
@@ -152,7 +152,7 @@ func (s *ModerationService) Remove(ctx context.Context, id string) (*Response, e
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // RemoveSpam removes a post, comment or modmail message via its full ID and marks it as spam.
@@ -168,7 +168,7 @@ func (s *ModerationService) RemoveSpam(ctx context.Context, id string) (*Respons
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Leave abdicates your moderator status in a subreddit via its full ID.
@@ -183,7 +183,7 @@ func (s *ModerationService) Leave(ctx context.Context, subredditID string) (*Res
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // LeaveContributor abdicates your approved user status in a subreddit via its full ID.
@@ -198,7 +198,7 @@ func (s *ModerationService) LeaveContributor(ctx context.Context, subredditID st
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Reported returns posts and comments that have been reported.
@@ -264,7 +264,7 @@ func (s *ModerationService) IgnoreReports(ctx context.Context, id string) (*Resp
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UnignoreReports allows reports on a post or comment to cause notifications.
@@ -279,7 +279,7 @@ func (s *ModerationService) UnignoreReports(ctx context.Context, id string) (*Re
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Invite a user to become a moderator of the subreddit.
@@ -298,7 +298,7 @@ func (s *ModerationService) Invite(ctx context.Context, subreddit string, userna
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Uninvite a user from becoming a moderator of the subreddit.
@@ -322,7 +322,7 @@ func (s *ModerationService) SetPermissions(ctx context.Context, subreddit string
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Ban a user from the subreddit.
@@ -343,7 +343,7 @@ func (s *ModerationService) Ban(ctx context.Context, subreddit string, username 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Unban a user from the subreddit.
@@ -369,7 +369,7 @@ func (s *ModerationService) BanWiki(ctx context.Context, subreddit string, usern
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UnbanWiki unbans a user from contributing to the subreddit wiki.
@@ -420,7 +420,7 @@ func (s *ModerationService) createRelationship(ctx context.Context, subreddit, u
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 func (s *ModerationService) deleteRelationship(ctx context.Context, subreddit, username, relationship string) (*Response, error) {
@@ -436,7 +436,7 @@ func (s *ModerationService) deleteRelationship(ctx context.Context, subreddit, u
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Distinguish your post or comment via its full ID, adding a moderator tag to it.
@@ -454,7 +454,7 @@ func (s *ModerationService) Distinguish(ctx context.Context, id string) (*Respon
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // DistinguishAndSticky your comment via its full ID, adding a moderator tag to it
@@ -473,7 +473,7 @@ func (s *ModerationService) DistinguishAndSticky(ctx context.Context, id string)
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Undistinguish your post or comment via its full ID, removing the moderator tag from it.
@@ -490,5 +490,5 @@ func (s *ModerationService) Undistinguish(ctx context.Context, id string) (*Resp
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }

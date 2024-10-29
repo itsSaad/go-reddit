@@ -269,7 +269,7 @@ func (s *LiveThreadService) Update(ctx context.Context, id, text string) (*Respo
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Updates gets a list of updates posted in the live thread.
@@ -325,7 +325,7 @@ func (s *LiveThreadService) Strike(ctx context.Context, threadID, updateID strin
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Delete an update from the live thread.
@@ -341,7 +341,7 @@ func (s *LiveThreadService) Delete(ctx context.Context, threadID, updateID strin
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Create a live thread and get its id.
@@ -369,7 +369,7 @@ func (s *LiveThreadService) Create(ctx context.Context, request *LiveThreadCreat
 			} `json:"data"`
 		} `json:"json"`
 	})
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return "", resp, err
 	}
@@ -388,7 +388,7 @@ func (s *LiveThreadService) Close(ctx context.Context, id string) (*Response, er
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Configure the thread.
@@ -410,7 +410,7 @@ func (s *LiveThreadService) Configure(ctx context.Context, id string, request *L
 		return nil, err
 	}
 
-	resp, err := s.client.Do(ctx, req, nil)
+	resp, err := s.client.Do(ctx, req, nil, false)
 	if err != nil {
 		return resp, err
 	}
@@ -429,7 +429,7 @@ func (s *LiveThreadService) Contributors(ctx context.Context, id string) (*LiveT
 	}
 
 	root := new(LiveThreadContributors)
-	resp, err := s.client.Do(ctx, req, &root)
+	resp, err := s.client.Do(ctx, req, &root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -448,7 +448,7 @@ func (s *LiveThreadService) Accept(ctx context.Context, id string) (*Response, e
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Leave the live thread by abdicating your status as contributor.
@@ -462,7 +462,7 @@ func (s *LiveThreadService) Leave(ctx context.Context, id string) (*Response, er
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Invite another user to contribute to the live thread.
@@ -481,7 +481,7 @@ func (s *LiveThreadService) Invite(ctx context.Context, id, username string, per
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Uninvite a user that's been invited to contribute to a live thread via their full ID.
@@ -497,7 +497,7 @@ func (s *LiveThreadService) Uninvite(ctx context.Context, threadID, userID strin
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // SetPermissions sets the permissions for the contributor in the live thread.
@@ -516,7 +516,7 @@ func (s *LiveThreadService) SetPermissions(ctx context.Context, id, username str
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // SetPermissionsForInvite sets the permissions for a contributor who's yet to accept/refuse their invite.
@@ -535,7 +535,7 @@ func (s *LiveThreadService) SetPermissionsForInvite(ctx context.Context, id, use
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Revoke a user's contributorship via their full ID.
@@ -551,7 +551,7 @@ func (s *LiveThreadService) Revoke(ctx context.Context, threadID, userID string)
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // HideDiscussion hides a linked post from the live thread's discussion sidebar.
@@ -567,7 +567,7 @@ func (s *LiveThreadService) HideDiscussion(ctx context.Context, threadID, postID
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // UnhideDiscussion unhides a linked post from the live thread's discussion sidebar.
@@ -583,7 +583,7 @@ func (s *LiveThreadService) UnhideDiscussion(ctx context.Context, threadID, post
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Report the live thread.
@@ -606,5 +606,5 @@ func (s *LiveThreadService) Report(ctx context.Context, id, reason string) (*Res
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }

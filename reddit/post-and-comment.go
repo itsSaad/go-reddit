@@ -37,7 +37,7 @@ func (s *postAndCommentService) Delete(ctx context.Context, id string) (*Respons
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Save a post or comment.
@@ -52,7 +52,7 @@ func (s *postAndCommentService) Save(ctx context.Context, id string) (*Response,
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Unsave a post or comment.
@@ -67,7 +67,7 @@ func (s *postAndCommentService) Unsave(ctx context.Context, id string) (*Respons
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // EnableReplies enables inbox replies for one of your posts or comments.
@@ -83,7 +83,7 @@ func (s *postAndCommentService) EnableReplies(ctx context.Context, id string) (*
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // DisableReplies dsables inbox replies for one of your posts or comments.
@@ -99,7 +99,7 @@ func (s *postAndCommentService) DisableReplies(ctx context.Context, id string) (
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Lock a post or comment, preventing it from receiving new comments.
@@ -114,7 +114,7 @@ func (s *postAndCommentService) Lock(ctx context.Context, id string) (*Response,
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Unlock a post or comment, allowing it to receive new comments.
@@ -129,7 +129,7 @@ func (s *postAndCommentService) Unlock(ctx context.Context, id string) (*Respons
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 func (s *postAndCommentService) vote(ctx context.Context, id string, vote vote) (*Response, error) {
@@ -145,7 +145,7 @@ func (s *postAndCommentService) vote(ctx context.Context, id string, vote vote) 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Upvote a post or a comment.
@@ -178,5 +178,5 @@ func (s *postAndCommentService) Report(ctx context.Context, id string, reason st
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }

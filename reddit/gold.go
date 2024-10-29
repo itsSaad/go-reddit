@@ -25,7 +25,7 @@ func (s *GoldService) Gild(ctx context.Context, id string) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Give the user between 1 and 36 (inclusive) months of gold.
@@ -45,5 +45,5 @@ func (s *GoldService) Give(ctx context.Context, username string, months int) (*R
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }

@@ -64,6 +64,34 @@ func TestCommentService_Submit(t *testing.T) {
 	require.Equal(t, expectedCommentSubmitOrEdit, comment)
 }
 
+func TestCommentService_SubmitAsync(t *testing.T) {
+	client, mux := setupAsync(t)
+
+	blob, err := readFileContents("../testdata/comment/submit-or-edit.json")
+	require.NoError(t, err)
+
+	mux.HandleFunc("/api/comment", func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, http.MethodPost, r.Method)
+
+		form := url.Values{}
+		form.Set("api_type", "json")
+		form.Set("return_rtjson", "true")
+		form.Set("parent", "t1_test")
+		form.Set("text", "test comment")
+
+		err := r.ParseForm()
+		require.NoError(t, err)
+		require.Equal(t, form, r.PostForm)
+
+		fmt.Fprint(w, blob)
+	})
+
+	comment, resp, err := client.Comment.SubmitAsync(ctx, "t3_1er3vmw", "test comment1")
+	fmt.Println("job_id:", resp.JobId)
+	require.NoError(t, err)
+	require.Equal(t, expectedCommentSubmitOrEdit, comment)
+}
+
 func TestCommentService_Edit(t *testing.T) {
 	client, mux := setup(t)
 

@@ -34,7 +34,32 @@ func (s *CommentService) Submit(ctx context.Context, parentID string, text strin
 	}
 
 	root := new(Comment)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root, resp, nil
+}
+
+// Submit a comment as a reply to a post, comment, or message.
+// parentID is the full ID of the thing being replied to.
+func (s *CommentService) SubmitAsync(ctx context.Context, parentID string, text string) (*Comment, *Response, error) {
+	path := "api/comment"
+
+	form := url.Values{}
+	form.Set("api_type", "json")
+	form.Set("return_rtjson", "true")
+	form.Set("parent", parentID)
+	form.Set("text", text)
+
+	req, err := s.client.NewRequest(http.MethodPost, path, form)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(Comment)
+	resp, err := s.client.Do(ctx, req, root, true)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -58,7 +83,7 @@ func (s *CommentService) Edit(ctx context.Context, id string, text string) (*Com
 	}
 
 	root := new(Comment)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -100,7 +125,7 @@ func (s *CommentService) LoadMoreReplies(ctx context.Context, comment *Comment) 
 			} `json:"data"`
 		} `json:"json"`
 	})
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return resp, err
 	}

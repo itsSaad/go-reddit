@@ -225,7 +225,7 @@ func (s *WikiService) Edit(ctx context.Context, editRequest *WikiPageEditRequest
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Revert a wiki page to a specific revision.
@@ -241,7 +241,7 @@ func (s *WikiService) Revert(ctx context.Context, subreddit, page, revisionID st
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Settings gets the subreddit's wiki page's settings.
@@ -273,7 +273,7 @@ func (s *WikiService) UpdateSettings(ctx context.Context, subreddit, page string
 	}
 
 	root := new(thing)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -309,7 +309,7 @@ func (s *WikiService) ToggleVisibility(ctx context.Context, subreddit, page, rev
 	root := new(struct {
 		Status bool `json:"status"`
 	})
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return false, resp, err
 	}
@@ -344,7 +344,7 @@ func (s *WikiService) revisions(ctx context.Context, subreddit, page string, opt
 	}
 
 	root := new(wikiPageRevisionListing)
-	resp, err := s.client.Do(ctx, req, root)
+	resp, err := s.client.Do(ctx, req, root, false)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -376,7 +376,7 @@ func (s *WikiService) Allow(ctx context.Context, subreddit, page, username strin
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
 
 // Deny the user the ability to edit the specified wiki page in the subreddit.
@@ -392,5 +392,5 @@ func (s *WikiService) Deny(ctx context.Context, subreddit, page, username string
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	return s.client.Do(ctx, req, nil, false)
 }
