@@ -33,11 +33,9 @@ func setup(t testing.TB) (*Client, *http.ServeMux) {
 		w.Header().Add(headerContentType, mediaTypeJSON)
 		fmt.Fprint(w, response)
 	})
-
 	client, _ := NewClient(
-		Credentials{"id1", "secret1", "user1", "password1"},
-		WithBaseURL(server.URL),
-		WithTokenURL(server.URL+"/api/v1/access_token"),
+		Credentials{"client_id", "client_secret", "", ""},
+		WithAccessToken("access_token_value"),
 	)
 
 	return client, mux

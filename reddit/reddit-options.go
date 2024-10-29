@@ -31,6 +31,13 @@ func WithUserAgent(ua string) Opt {
 	}
 }
 
+func WithAccessToken(accessToken string) Opt {
+	return func(c *Client) error {
+		c.AccessToken = accessToken
+		return nil
+	}
+}
+
 // WithBaseURL sets the base URL for the client to make requests to.
 func WithBaseURL(u string) Opt {
 	return func(c *Client) error {

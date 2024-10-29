@@ -59,7 +59,7 @@ func TestCommentService_Submit(t *testing.T) {
 		fmt.Fprint(w, blob)
 	})
 
-	comment, _, err := client.Comment.Submit(ctx, "t1_test", "test comment")
+	comment, _, err := client.Comment.Submit(ctx, "t3_1er3vmw", "test comment1")
 	require.NoError(t, err)
 	require.Equal(t, expectedCommentSubmitOrEdit, comment)
 }
@@ -86,7 +86,7 @@ func TestCommentService_Edit(t *testing.T) {
 		fmt.Fprint(w, blob)
 	})
 
-	comment, _, err := client.Comment.Edit(ctx, "t1_test", "test comment")
+	comment, _, err := client.Comment.Edit(ctx, "t1_lua77y7", "test comment")
 	require.NoError(t, err)
 	require.Equal(t, expectedCommentSubmitOrEdit, comment)
 }

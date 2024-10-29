@@ -75,6 +75,8 @@ type Client struct {
 	Username string
 	Password string
 
+	AccessToken string
+
 	// This is the client's user ID in Reddit's database.
 	redditID string
 

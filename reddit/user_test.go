@@ -193,6 +193,7 @@ func TestUserService_Get(t *testing.T) {
 	})
 
 	user, _, err := client.User.Get(ctx, "Test_User")
+	fmt.Println(user, err)
 	require.NoError(t, err)
 	require.Equal(t, expectedUser, user)
 }
