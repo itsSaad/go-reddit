@@ -44,30 +44,40 @@ type oauthTokenSource struct {
 	ctx                context.Context
 	config             *oauth2.Config
 	username, password string
+	token              *oauth2.Token
 }
 
 func (s *oauthTokenSource) Token() (*oauth2.Token, error) {
-	return s.config.PasswordCredentialsToken(s.ctx, s.username, s.password)
+	//return s.config.PasswordCredentialsToken(s.ctx, s.username, s.password)
+	//如果token快过期了可以重新获取token
+	return s.token, nil
 }
 
-func oauthTransport(client *Client) http.RoundTripper {
+func oauthTransport(client *Client, accessToken string) http.RoundTripper {
 	httpClient := &http.Client{Transport: client.client.Transport}
 	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, httpClient)
 
 	config := &oauth2.Config{
 		ClientID:     client.ID,
 		ClientSecret: client.Secret,
-		Endpoint: oauth2.Endpoint{
-			TokenURL:  client.TokenURL.String(),
-			AuthStyle: oauth2.AuthStyleInHeader,
+		Endpoint:     oauth2.Endpoint{
+			//AuthURL: client.AuthURL.String(),
+			//TokenURL:  client.TokenURL.String(),
+			//AuthStyle: oauth2.AuthStyleInHeader,
 		},
 	}
-
+	token := &oauth2.Token{
+		AccessToken: accessToken,
+		//TokenType:    client.TokenType,
+		//RefreshToken: client.RefreshToken,
+		//Expiry:       client.ExpiresAt,
+	}
 	tokenSource := oauth2.ReuseTokenSource(nil, &oauthTokenSource{
 		ctx:      ctx,
 		config:   config,
 		username: client.Username,
 		password: client.Password,
+		token:    token,
 	})
 
 	return &oauth2.Transport{

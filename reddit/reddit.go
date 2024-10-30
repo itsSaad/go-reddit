@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	libraryName    = "github.com/vartanbeno/go-reddit"
+	libraryName    = "github.com/bitcomputing/go-reddit"
 	libraryVersion = "2.0.0"
 
 	defaultBaseURL         = "https://oauth.reddit.com"
@@ -30,9 +30,10 @@ const (
 	mediaTypeJSON = "application/json"
 	mediaTypeForm = "application/x-www-form-urlencoded"
 
-	headerContentType = "Content-Type"
-	headerAccept      = "Accept"
-	headerUserAgent   = "User-Agent"
+	headerContentType   = "Content-Type"
+	headerAccept        = "Accept"
+	headerUserAgent     = "User-Agent"
+	headerAuthorization = "Authorization"
 
 	headerRateLimitRemaining = "x-ratelimit-remaining"
 	headerRateLimitUsed      = "x-ratelimit-used"
@@ -70,10 +71,16 @@ type Client struct {
 	rateMu sync.Mutex
 	rate   Rate
 
+	isSync bool
+
 	ID       string
 	Secret   string
 	Username string
 	Password string
+
+	AccessToken string
+
+	BearerToken string
 
 	// This is the client's user ID in Reddit's database.
 	redditID string
@@ -99,6 +106,34 @@ type Client struct {
 	oauth2Transport *oauth2.Transport
 
 	onRequestCompleted RequestCompletionCallback
+}
+
+func (c *Client) InitializeClientIdClientSecret(clientId, clientSecret string) {
+	c.ID = clientId
+	c.Secret = clientSecret
+}
+func (c *Client) InitializeBearerToken(bearerToken string) {
+
+	authorizationTransport := &authorizationTransport{
+		Bearer: bearerToken,
+		Base:   c.client.Transport,
+	}
+	c.client.Transport = authorizationTransport
+}
+
+func (c *Client) InitializeUserAgent(userAgent string) {
+
+	userAgentTransport := &userAgentTransport{
+		userAgent: userAgent,
+		Base:      c.client.Transport,
+	}
+	c.client.Transport = userAgentTransport
+}
+
+func (c *Client) InitializeAccessToken(accessToken string) {
+
+	oauthTransport := oauthTransport(c, accessToken)
+	c.client.Transport = oauthTransport
 }
 
 // OnRequestCompleted sets the client's request completion callback.
@@ -153,18 +188,44 @@ func NewClient(credentials Credentials, opts ...Opt) (*Client, error) {
 		}
 	}
 
-	userAgentTransport := &userAgentTransport{
-		userAgent: client.UserAgent(),
-		Base:      client.client.Transport,
-	}
-	client.client.Transport = userAgentTransport
+	//userAgentTransport := &userAgentTransport{
+	//	userAgent: client.UserAgent(),
+	//	Base:      client.client.Transport,
+	//}
+	//client.client.Transport = userAgentTransport
+	//
+	//if client.client.CheckRedirect == nil {
+	//	client.client.CheckRedirect = client.redirect
+	//}
+	//
+	//oauthTransport := oauthTransport(client)
+	//client.client.Transport = oauthTransport
+	return client, nil
+}
 
-	if client.client.CheckRedirect == nil {
-		client.client.CheckRedirect = client.redirect
+// NewClient returns a new Reddit API client.
+// Use an Opt to configure the client credentials, such as WithHTTPClient or WithUserAgent.
+// If the FromEnv option is used with the correct environment variables, an empty struct can
+// be passed in as the credentials, since they will be overridden.
+func NewClientAsync(opts ...Opt) (*Client, error) {
+	client := newClient()
+	client.isSync = true
+
+	for _, opt := range opts {
+		if err := opt(client); err != nil {
+			return nil, err
+		}
 	}
 
-	oauthTransport := oauthTransport(client)
-	client.client.Transport = oauthTransport
+	//authorizationTransport := &authorizationTransport{
+	//	Bearer: client.BearerToken,
+	//	Base:   client.client.Transport,
+	//}
+	//client.client.Transport = authorizationTransport
+	//
+	//if client.client.CheckRedirect == nil {
+	//	client.client.CheckRedirect = client.redirect
+	//}
 
 	return client, nil
 }
@@ -303,6 +364,9 @@ type Response struct {
 
 	// Rate limit information.
 	Rate Rate
+
+	// JobId async job id.
+	JobId string
 }
 
 // newResponse creates a new Response for the provided http.Response.
@@ -314,6 +378,10 @@ func newResponse(r *http.Response) *Response {
 
 func (r *Response) populateAnchors(a anchor) {
 	r.After = a.After()
+}
+
+func (r *Response) jobResponse(job JobResponse) {
+	r.JobId = job.JobID
 }
 
 // parseRate parses the rate related headers.
@@ -381,6 +449,15 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 		if anchor, ok := v.(anchor); ok {
 			response.populateAnchors(anchor)
+		}
+	}
+	if c.isSync {
+		var job JobResponse
+		err = json.NewDecoder(response.Body).Decode(&job)
+		if err != nil {
+			return response, err
+		} else {
+			response.jobResponse(job)
 		}
 	}
 
