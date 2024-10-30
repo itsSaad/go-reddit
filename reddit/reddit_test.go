@@ -37,9 +37,8 @@ func setup(t testing.TB) (*Client, *http.ServeMux) {
 		Credentials{"client_id", "client_secret", "", ""},
 		//WithAccessToken("access_token_value"),
 	)
-	client.InitializeClientIdClientSecret("client_id_value", "client_secret_value")
 	client.InitializeUserAgent("user_agent_value")
-	client.InitializeAccessToken("access_token_value")
+	client.InitializeBearerToken("bearer_token_value")
 	return client, mux
 }
 
@@ -65,7 +64,6 @@ func setupAsync(t testing.TB) (*Client, *http.ServeMux) {
 		//WithBearerAuth("proxy_api_key"),
 	)
 
-	client.InitializeClientIdClientSecret("client_id_value", "client_secret_value")
 	client.InitializeBearerToken("bearer_token_value")
 
 	return client, mux
