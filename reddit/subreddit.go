@@ -428,7 +428,7 @@ func (s *SubredditService) handleSubscription(ctx context.Context, form url.Valu
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Subscribe subscribes to subreddits based on their names.
@@ -477,7 +477,7 @@ func (s *SubredditService) Favorite(ctx context.Context, subreddit string) (*Res
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Unfavorite the subreddit.
@@ -494,7 +494,7 @@ func (s *SubredditService) Unfavorite(ctx context.Context, subreddit string) (*R
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Search for subreddits.
@@ -517,7 +517,7 @@ func (s *SubredditService) SearchNames(ctx context.Context, query string) ([]str
 	}
 
 	root := new(rootSubredditNames)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -582,7 +582,7 @@ func (s *SubredditService) getSticky(ctx context.Context, subreddit string, num 
 	}
 
 	root := new(PostAndComments)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -621,7 +621,7 @@ func (s *SubredditService) random(ctx context.Context, nsfw bool) (*Subreddit, *
 			} `json:"children"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -656,7 +656,7 @@ func (s *SubredditService) SubmissionText(ctx context.Context, name string) (str
 	root := new(struct {
 		Text string `json:"submit_text"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return "", resp, err
 	}
@@ -684,7 +684,7 @@ func (s *SubredditService) Banned(ctx context.Context, subreddit string, opts *L
 			After string `json:"after"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -713,7 +713,7 @@ func (s *SubredditService) Muted(ctx context.Context, subreddit string, opts *Li
 			After         string          `json:"after"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -742,7 +742,7 @@ func (s *SubredditService) WikiBanned(ctx context.Context, subreddit string, opt
 			After string `json:"after"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -771,7 +771,7 @@ func (s *SubredditService) Contributors(ctx context.Context, subreddit string, o
 			After         string          `json:"after"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -800,7 +800,7 @@ func (s *SubredditService) WikiContributors(ctx context.Context, subreddit strin
 			After         string          `json:"after"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -823,7 +823,7 @@ func (s *SubredditService) Moderators(ctx context.Context, subreddit string) ([]
 			Moderators []*Moderator `json:"children"`
 		} `json:"data"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -843,7 +843,7 @@ func (s *SubredditService) Rules(ctx context.Context, subreddit string) ([]*Subr
 	root := new(struct {
 		Rules []*SubredditRule `json:"rules"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -870,7 +870,7 @@ func (s *SubredditService) CreateRule(ctx context.Context, subreddit string, req
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Traffic gets the traffic data of the subreddit.
@@ -888,7 +888,7 @@ func (s *SubredditService) Traffic(ctx context.Context, subreddit string) ([]*Su
 		Hour  []*SubredditTrafficStats `json:"hour"`
 		Month []*SubredditTrafficStats `json:"month"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, nil, nil, resp, err
 	}
@@ -917,7 +917,7 @@ func (s *SubredditService) StyleSheetRaw(ctx context.Context, subreddit string) 
 	}
 
 	buf := new(bytes.Buffer)
-	resp, err := s.client.Do(ctx, req, buf, false)
+	resp, err := s.client.Do(ctx, req, buf)
 	if err != nil {
 		return "", resp, err
 	}
@@ -943,7 +943,7 @@ func (s *SubredditService) UpdateStyleSheet(ctx context.Context, subreddit, styl
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // RemoveImage removes an image from the subreddit's custom image set.
@@ -960,7 +960,7 @@ func (s *SubredditService) RemoveImage(ctx context.Context, subreddit, imageName
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // RemoveHeader removes the subreddit's current header image.
@@ -976,7 +976,7 @@ func (s *SubredditService) RemoveHeader(ctx context.Context, subreddit string) (
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // RemoveMobileHeader removes the subreddit's current mobile header.
@@ -992,7 +992,7 @@ func (s *SubredditService) RemoveMobileHeader(ctx context.Context, subreddit str
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // RemoveMobileIcon removes the subreddit's current mobile icon.
@@ -1008,7 +1008,7 @@ func (s *SubredditService) RemoveMobileIcon(ctx context.Context, subreddit strin
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 func (s *SubredditService) uploadImage(ctx context.Context, subreddit, imagePath, imageType, imageName string) (string, *Response, error) {
@@ -1067,7 +1067,7 @@ func (s *SubredditService) uploadImage(ctx context.Context, subreddit, imagePath
 		ErrorValues []string `json:"errors_values"`
 		ImageSource string   `json:"img_src"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return "", resp, err
 	}
@@ -1124,7 +1124,7 @@ func (s *SubredditService) Create(ctx context.Context, name string, request *Sub
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Edit a subreddit.
@@ -1149,7 +1149,7 @@ func (s *SubredditService) Edit(ctx context.Context, subredditID string, request
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // GetSettings gets the settings of a subreddit.
@@ -1173,7 +1173,7 @@ func (s *SubredditService) PostRequirements(ctx context.Context, subreddit strin
 	}
 
 	root := new(SubredditPostRequirements)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}

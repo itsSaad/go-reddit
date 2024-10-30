@@ -71,6 +71,8 @@ type Client struct {
 	rateMu sync.Mutex
 	rate   Rate
 
+	isSync bool
+
 	ID       string
 	Secret   string
 	Username string
@@ -207,6 +209,7 @@ func NewClient(credentials Credentials, opts ...Opt) (*Client, error) {
 // be passed in as the credentials, since they will be overridden.
 func NewClientAsync(opts ...Opt) (*Client, error) {
 	client := newClient()
+	client.isSync = true
 
 	for _, opt := range opts {
 		if err := opt(client); err != nil {
@@ -402,7 +405,7 @@ func parseRate(r *http.Response) Rate {
 // Do sends an API request and returns the API response. The API response is JSON decoded and stored in the value
 // pointed to by v, or returned as an error if an API error has occurred. If v implements the io.Writer interface,
 // the raw response will be written to v, without attempting to decode it.
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}, isJob bool) (*Response, error) {
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
 	if err := c.checkRateLimitBeforeDo(req); err != nil {
 		return &Response{
 			Response: err.Response,
@@ -448,7 +451,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}, isJob
 			response.populateAnchors(anchor)
 		}
 	}
-	if isJob {
+	if c.isSync {
 		var job JobResponse
 		err = json.NewDecoder(response.Body).Decode(&job)
 		if err != nil {
@@ -577,7 +580,7 @@ func (c *Client) getThing(ctx context.Context, path string, opts interface{}) (*
 	}
 
 	t := new(thing)
-	resp, err := c.Do(ctx, req, t, false)
+	resp, err := c.Do(ctx, req, t)
 	if err != nil {
 		return nil, resp, err
 	}

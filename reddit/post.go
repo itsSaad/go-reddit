@@ -73,7 +73,7 @@ func (s *PostService) Get(ctx context.Context, id string) (*PostAndComments, *Re
 	}
 
 	root := new(PostAndComments)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -97,7 +97,7 @@ func (s *PostService) Duplicates(ctx context.Context, id string, opts *ListDupli
 	}
 
 	var root [2]thing
-	resp, err := s.client.Do(ctx, req, &root, false)
+	resp, err := s.client.Do(ctx, req, &root)
 	if err != nil {
 		return nil, nil, resp, err
 	}
@@ -127,7 +127,7 @@ func (s *PostService) submit(ctx context.Context, v interface{}) (*Submitted, *R
 	}
 
 	root := new(rootSubmittedPost)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -169,7 +169,7 @@ func (s *PostService) Edit(ctx context.Context, id string, text string) (*Post, 
 	}
 
 	root := new(Post)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -193,7 +193,7 @@ func (s *PostService) Hide(ctx context.Context, ids ...string) (*Response, error
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Unhide posts.
@@ -212,7 +212,7 @@ func (s *PostService) Unhide(ctx context.Context, ids ...string) (*Response, err
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // MarkNSFW marks a post as NSFW.
@@ -227,7 +227,7 @@ func (s *PostService) MarkNSFW(ctx context.Context, id string) (*Response, error
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // UnmarkNSFW unmarks a post as NSFW.
@@ -242,7 +242,7 @@ func (s *PostService) UnmarkNSFW(ctx context.Context, id string) (*Response, err
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Spoiler marks a post as a spoiler.
@@ -257,7 +257,7 @@ func (s *PostService) Spoiler(ctx context.Context, id string) (*Response, error)
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Unspoiler unmarks a post as a spoiler.
@@ -272,7 +272,7 @@ func (s *PostService) Unspoiler(ctx context.Context, id string) (*Response, erro
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Sticky a post in its subreddit.
@@ -295,7 +295,7 @@ func (s *PostService) Sticky(ctx context.Context, id string, bottom bool) (*Resp
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Unsticky unstickies a post in its subreddit.
@@ -312,7 +312,7 @@ func (s *PostService) Unsticky(ctx context.Context, id string) (*Response, error
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // PinToProfile pins one of your posts to your profile.
@@ -344,7 +344,7 @@ func (s *PostService) PinToProfile(ctx context.Context, id string) (*Response, e
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // UnpinFromProfile unpins one of your posts from your profile.
@@ -362,7 +362,7 @@ func (s *PostService) UnpinFromProfile(ctx context.Context, id string) (*Respons
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // setSuggestedSort sets the suggested comment sort for the post.
@@ -380,7 +380,7 @@ func (s *PostService) setSuggestedSort(ctx context.Context, id string, sort stri
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // SetSuggestedSortBest sets the suggested comment sort for the post to best.
@@ -444,7 +444,7 @@ func (s *PostService) EnableContestMode(ctx context.Context, id string) (*Respon
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // DisableContestMode disables contest mode for the post.
@@ -461,7 +461,7 @@ func (s *PostService) DisableContestMode(ctx context.Context, id string) (*Respo
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // LoadMoreComments retrieves more comments that were left out when initially fetching the post.
@@ -498,7 +498,7 @@ func (s *PostService) LoadMoreComments(ctx context.Context, pc *PostAndComments)
 			} `json:"data"`
 		} `json:"json"`
 	})
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return resp, err
 	}
@@ -537,7 +537,7 @@ func (s *PostService) random(ctx context.Context, subreddits ...string) (*PostAn
 	}
 
 	root := new(PostAndComments)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -578,5 +578,5 @@ func (s *PostService) MarkVisited(ctx context.Context, ids ...string) (*Response
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }

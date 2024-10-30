@@ -88,7 +88,7 @@ func (s *EmojiService) Get(ctx context.Context, subreddit string) ([]*Emoji, []*
 	}
 
 	root := make(map[string]emojis)
-	resp, err := s.client.Do(ctx, req, &root, false)
+	resp, err := s.client.Do(ctx, req, &root)
 	if err != nil {
 		return nil, nil, resp, err
 	}
@@ -113,7 +113,7 @@ func (s *EmojiService) Delete(ctx context.Context, subreddit string, emoji strin
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // SetSize sets the custom emoji size in the subreddit.
@@ -130,7 +130,7 @@ func (s *EmojiService) SetSize(ctx context.Context, subreddit string, height, wi
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // DisableCustomSize disables the custom emoji size in the subreddit.
@@ -140,7 +140,7 @@ func (s *EmojiService) DisableCustomSize(ctx context.Context, subreddit string) 
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 func (s *EmojiService) lease(ctx context.Context, subreddit, imagePath string) (string, map[string]string, *Response, error) {
@@ -168,7 +168,7 @@ func (s *EmojiService) lease(ctx context.Context, subreddit, imagePath string) (
 		} `json:"s3UploadLease"`
 	}
 
-	resp, err := s.client.Do(ctx, req, &response, false)
+	resp, err := s.client.Do(ctx, req, &response)
 	if err != nil {
 		return "", nil, resp, err
 	}
@@ -197,7 +197,7 @@ func (s *EmojiService) upload(ctx context.Context, subreddit string, createReque
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Upload an emoji to the subreddit.
@@ -274,5 +274,5 @@ func (s *EmojiService) Update(ctx context.Context, subreddit string, updateReque
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }

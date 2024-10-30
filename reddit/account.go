@@ -225,7 +225,7 @@ func (s *AccountService) Info(ctx context.Context) (*User, *Response, error) {
 	}
 
 	root := new(User)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -254,7 +254,7 @@ func (s *AccountService) Settings(ctx context.Context) (*Settings, *Response, er
 	}
 
 	root := new(Settings)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -272,7 +272,7 @@ func (s *AccountService) UpdateSettings(ctx context.Context, settings *Settings)
 	}
 
 	root := new(Settings)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -301,7 +301,7 @@ func (s *AccountService) Friends(ctx context.Context) ([]Relationship, *Response
 	}
 
 	var root [2]rootRelationshipList
-	resp, err := s.client.Do(ctx, req, &root, false)
+	resp, err := s.client.Do(ctx, req, &root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -319,7 +319,7 @@ func (s *AccountService) Blocked(ctx context.Context) ([]Relationship, *Response
 	}
 
 	root := new(rootRelationshipList)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -337,7 +337,7 @@ func (s *AccountService) Messaging(ctx context.Context) ([]Relationship, []Relat
 	}
 
 	var root [2]rootRelationshipList
-	resp, err := s.client.Do(ctx, req, &root, false)
+	resp, err := s.client.Do(ctx, req, &root)
 	if err != nil {
 		return nil, nil, resp, err
 	}
@@ -358,7 +358,7 @@ func (s *AccountService) Trusted(ctx context.Context) ([]Relationship, *Response
 	}
 
 	root := new(rootRelationshipList)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -380,7 +380,7 @@ func (s *AccountService) AddTrusted(ctx context.Context, username string) (*Resp
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // RemoveTrusted removes a user from your trusted users.
@@ -396,5 +396,5 @@ func (s *AccountService) RemoveTrusted(ctx context.Context, username string) (*R
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }

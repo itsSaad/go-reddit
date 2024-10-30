@@ -86,7 +86,7 @@ func TestCommentService_SubmitAsync(t *testing.T) {
 		fmt.Fprint(w, blob)
 	})
 
-	comment, resp, err := client.Comment.SubmitAsync(ctx, "t3_1er3vmw", "test comment1")
+	comment, resp, err := client.Comment.Submit(ctx, "t3_1er3vmw", "test comment1")
 	fmt.Println("job_id:", resp.JobId)
 	require.NoError(t, err)
 	require.Equal(t, expectedCommentSubmitOrEdit, comment)

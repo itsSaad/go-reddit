@@ -125,7 +125,7 @@ func (s *MultiService) Mine(ctx context.Context) ([]*Multi, *Response, error) {
 	}
 
 	root := new(things)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -143,7 +143,7 @@ func (s *MultiService) Of(ctx context.Context, username string) ([]*Multi, *Resp
 	}
 
 	root := new(things)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -169,7 +169,7 @@ func (s *MultiService) Copy(ctx context.Context, copyRequest *MultiCopyRequest) 
 	}
 
 	root := new(thing)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -199,7 +199,7 @@ func (s *MultiService) Create(ctx context.Context, createRequest *MultiCreateOrU
 	}
 
 	root := new(thing)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -230,7 +230,7 @@ func (s *MultiService) Update(ctx context.Context, multiPath string, updateReque
 	}
 
 	root := new(thing)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -246,7 +246,7 @@ func (s *MultiService) Delete(ctx context.Context, multiPath string) (*Response,
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Description gets a multireddit's description.
@@ -272,7 +272,7 @@ func (s *MultiService) UpdateDescription(ctx context.Context, multiPath string, 
 	}
 
 	root := new(thing)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return "", resp, err
 	}
@@ -293,7 +293,7 @@ func (s *MultiService) AddSubreddit(ctx context.Context, multiPath string, subre
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // DeleteSubreddit removes a subreddit from a multireddit.
@@ -303,5 +303,5 @@ func (s *MultiService) DeleteSubreddit(ctx context.Context, multiPath string, su
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }

@@ -88,7 +88,7 @@ func (s *UserService) GetMultipleByID(ctx context.Context, ids ...string) (map[s
 	}
 
 	root := make(map[string]*UserSummary)
-	resp, err := s.client.Do(ctx, req, &root, false)
+	resp, err := s.client.Do(ctx, req, &root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -114,7 +114,7 @@ func (s *UserService) UsernameAvailable(ctx context.Context, username string) (b
 	}
 
 	root := new(bool)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return false, resp, err
 	}
@@ -240,7 +240,7 @@ func (s *UserService) GetFriendship(ctx context.Context, username string) (*Rela
 	}
 
 	root := new(Relationship)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -261,7 +261,7 @@ func (s *UserService) Friend(ctx context.Context, username string) (*Relationshi
 	}
 
 	root := new(Relationship)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -276,7 +276,7 @@ func (s *UserService) Unfriend(ctx context.Context, username string) (*Response,
 	if err != nil {
 		return nil, err
 	}
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Block a user.
@@ -292,7 +292,7 @@ func (s *UserService) Block(ctx context.Context, username string) (*Blocked, *Re
 	}
 
 	root := new(Blocked)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -313,7 +313,7 @@ func (s *UserService) BlockByID(ctx context.Context, id string) (*Blocked, *Resp
 	}
 
 	root := new(Blocked)
-	resp, err := s.client.Do(ctx, req, root, false)
+	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -340,7 +340,7 @@ func (s *UserService) Unblock(ctx context.Context, username string) (*Response, 
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // UnblockByID unblocks a user via their full id.
@@ -362,7 +362,7 @@ func (s *UserService) UnblockByID(ctx context.Context, id string) (*Response, er
 		return nil, err
 	}
 
-	return s.client.Do(ctx, req, nil, false)
+	return s.client.Do(ctx, req, nil)
 }
 
 // Trophies returns a list of your trophies.
