@@ -890,7 +890,7 @@ func TestSubredditService_SearchPosts(t *testing.T) {
 		fmt.Fprint(w, blob)
 	})
 
-	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "", nil)
+	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "", "", nil)
 	require.NoError(t, err)
 	require.Equal(t, expectedSearchPosts, posts)
 	require.Equal(t, "t3_hmwhd7", resp.After)
@@ -916,7 +916,7 @@ func TestSubredditService_SearchPosts_InSubreddit(t *testing.T) {
 		fmt.Fprint(w, blob)
 	})
 
-	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "test", nil)
+	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "", "test", nil)
 	require.NoError(t, err)
 	require.Equal(t, expectedSearchPosts, posts)
 	require.Equal(t, "t3_hmwhd7", resp.After)
@@ -942,7 +942,7 @@ func TestSubredditService_SearchPosts_InSubreddits(t *testing.T) {
 		fmt.Fprint(w, blob)
 	})
 
-	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "test+golang+nba", nil)
+	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "", "test+golang+nba", nil)
 	require.NoError(t, err)
 	require.Equal(t, expectedSearchPosts, posts)
 	require.Equal(t, "t3_hmwhd7", resp.After)
