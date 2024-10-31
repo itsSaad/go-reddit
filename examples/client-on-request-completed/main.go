@@ -27,7 +27,7 @@ func run() (err error) {
 
 	client.Subreddit.Search(ctx, "programming", nil)
 	client.Subreddit.SearchNames(ctx, "monitor")
-	client.Subreddit.SearchPosts(ctx, "react", "webdev", nil)
+	client.Subreddit.SearchPosts(ctx, "react", "", "webdev", nil)
 	client.Subreddit.HotPosts(ctx, "golang", &reddit.ListOptions{Limit: 5})
 
 	return
