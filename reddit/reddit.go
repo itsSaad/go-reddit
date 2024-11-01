@@ -112,14 +112,6 @@ func (c *Client) InitializeClientIdClientSecret(clientId, clientSecret string) {
 	c.ID = clientId
 	c.Secret = clientSecret
 }
-func (c *Client) InitializeBearerToken(bearerToken string) {
-
-	authorizationTransport := &authorizationTransport{
-		Bearer: bearerToken,
-		Base:   c.client.Transport,
-	}
-	c.client.Transport = authorizationTransport
-}
 
 func (c *Client) InitializeUserAgent(userAgent string) {
 
