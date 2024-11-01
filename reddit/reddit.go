@@ -518,16 +518,24 @@ func CheckResponse(r *http.Response) error {
 		err.Message = fmt.Sprintf("API rate limit has been exceeded until %s.", err.Rate.Reset)
 		return err
 	}
-
-	jsonErrorResponse := &JSONErrorResponse{Response: r}
+	proxyErrorResponse := &ProxyErrorResponse{Response: r}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err == nil && len(data) > 0 {
-		json.Unmarshal(data, jsonErrorResponse)
-		if len(jsonErrorResponse.JSON.Errors) > 0 {
-			return jsonErrorResponse
+		json.Unmarshal(data, proxyErrorResponse)
+		if proxyErrorResponse.Error() != "" {
+			return proxyErrorResponse
 		}
 	}
+	//jsonErrorResponse := &JSONErrorResponse{Response: r}
+	//
+	//data, err := ioutil.ReadAll(r.Body)
+	//if err == nil && len(data) > 0 {
+	//	json.Unmarshal(data, jsonErrorResponse)
+	//	if len(jsonErrorResponse.JSON.Errors) > 0 {
+	//		return jsonErrorResponse
+	//	}
+	//}
 
 	// reset response body
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(data))

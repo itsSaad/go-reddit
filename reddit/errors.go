@@ -57,6 +57,39 @@ func (r *JSONErrorResponse) Error() string {
 	)
 }
 
+// ProxyErrorResponse is an error response that sometimes gets returned with a 200 code.
+type ProxyErrorResponse struct {
+	// HTTP response that caused this error.
+	Response *http.Response `json:"-"`
+
+	//{
+	//    "error": {
+	//        "code": 1000,
+	//        "message": "internal server error",
+	//        "type": "",
+	//        "http_status_code": 500
+	//    }
+	//}
+	ProxyError struct {
+		Code           int    `json:"code"`
+		Message        string `json:"message"`
+		Type           string `json:"type"`
+		HttpStatusCode int    `json:"http_status_code"`
+	} `json:"error"`
+}
+
+func (r *ProxyErrorResponse) Error() string {
+	if r.ProxyError.Message != "" {
+		return fmt.Sprintf(
+			"%s %s: %d %s",
+			r.Response.Request.Method, r.Response.Request.URL, r.Response.StatusCode, r.ProxyError.Message,
+		)
+	} else {
+		return ""
+	}
+
+}
+
 // An ErrorResponse reports the error caused by an API request
 type ErrorResponse struct {
 	// HTTP response that caused this error
