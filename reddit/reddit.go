@@ -433,10 +433,17 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 				return response, err
 			}
 		} else {
-			err = json.NewDecoder(response.Body).Decode(v)
+			buffer, err := io.ReadAll(response.Body)
 			if err != nil {
 				return response, err
 			}
+			err = json.Unmarshal(buffer, &v)
+			//err = json.NewDecoder(response.Body).Decode(v)
+			if err != nil {
+				return response, err
+			}
+			//重新给response.Body赋值
+			response.Body = io.NopCloser(bytes.NewReader(buffer))
 		}
 
 		if anchor, ok := v.(anchor); ok {
@@ -520,7 +527,7 @@ func CheckResponse(r *http.Response) error {
 	}
 	proxyErrorResponse := &ProxyErrorResponse{Response: r}
 
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err == nil && len(data) > 0 {
 		json.Unmarshal(data, proxyErrorResponse)
 		if proxyErrorResponse.Error() != "" {
@@ -538,14 +545,14 @@ func CheckResponse(r *http.Response) error {
 	//}
 
 	// reset response body
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+	r.Body = io.NopCloser(bytes.NewReader(data))
 
 	if c := r.StatusCode; c >= 200 && c <= 299 {
 		return nil
 	}
 
 	errorResponse := &ErrorResponse{Response: r}
-	data, err = ioutil.ReadAll(r.Body)
+	data, err = io.ReadAll(r.Body)
 	if err == nil && len(data) > 0 {
 		err := json.Unmarshal(data, errorResponse)
 		if err != nil {
