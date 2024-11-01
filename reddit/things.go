@@ -70,7 +70,9 @@ func (t *thing) UnmarshalJSON(b []byte) error {
 
 	t.Kind = root.Kind
 	var v interface{}
-
+	if t.Kind == "" {
+		return nil
+	}
 	switch t.Kind {
 	case kindListing:
 		v = new(listing)

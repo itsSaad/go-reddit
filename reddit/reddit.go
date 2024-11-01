@@ -437,8 +437,9 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 			if err != nil {
 				return response, err
 			}
-			err = json.Unmarshal(buffer, &v)
-			//err = json.NewDecoder(response.Body).Decode(v)
+			//重新给response.Body赋值
+			response.Body = io.NopCloser(bytes.NewReader(buffer))
+			err = json.NewDecoder(response.Body).Decode(v)
 			if err != nil {
 				return response, err
 			}

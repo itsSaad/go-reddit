@@ -896,6 +896,31 @@ func TestSubredditService_SearchPosts(t *testing.T) {
 	require.Equal(t, "t3_hmwhd7", resp.After)
 }
 
+func TestSubredditService_SearchPostsAsync(t *testing.T) {
+	client, mux := setupAsync(t)
+
+	blob, err := readFileContents("../testdata/subreddit/search-posts.json")
+	require.NoError(t, err)
+
+	mux.HandleFunc("/r/all/search", func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, http.MethodGet, r.Method)
+
+		form := url.Values{}
+		form.Set("q", "test")
+
+		err := r.ParseForm()
+		require.NoError(t, err)
+		require.Equal(t, form, r.Form)
+
+		fmt.Fprint(w, blob)
+	})
+
+	posts, resp, err := client.Subreddit.SearchPosts(ctx, "test", "", "", nil)
+	require.NoError(t, err)
+	require.Equal(t, expectedSearchPosts, posts)
+	require.Equal(t, "t3_hmwhd7", resp.After)
+}
+
 func TestSubredditService_SearchPosts_InSubreddit(t *testing.T) {
 	client, mux := setup(t)
 
