@@ -138,6 +138,23 @@ func TestAccountService_Info(t *testing.T) {
 	require.Equal(t, expectedInfo, info)
 }
 
+func TestAccountService_InfoAsync(t *testing.T) {
+	client, mux := setupAsync(t)
+
+	blob, err := readFileContents("../testdata/account/info.json")
+	require.NoError(t, err)
+
+	mux.HandleFunc("/api/v1/me", func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, http.MethodGet, r.Method)
+		fmt.Fprint(w, blob)
+	})
+
+	info, resp, err := client.Account.Info(ctx)
+	fmt.Println(info, resp, err)
+	require.NoError(t, err)
+	require.Equal(t, expectedInfo, info)
+}
+
 func TestAccountService_Karma(t *testing.T) {
 	client, mux := setup(t)
 
