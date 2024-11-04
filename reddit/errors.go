@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+const (
+	ErrorType = "reddit_api_error"
+
+	ErrorCommonLabel                    = "ERROR"
+	ErrorSubmitBannedFromSubredditLabel = "BANNED_FROM_SUBREDDIT"
+
+	ErrorCommonCode                    = 10001
+	ErrorSubmitBannedFromSubredditCode = 10002
+)
+
 // APIError is an error coming from Reddit.
 type APIError struct {
 	Label  string
@@ -57,6 +67,13 @@ func (r *JSONErrorResponse) Error() string {
 	)
 }
 
+type ProxyError struct {
+	Code           int    `json:"code"`
+	Message        string `json:"message"`
+	Type           string `json:"type"`
+	HttpStatusCode int    `json:"http_status_code"`
+}
+
 // ProxyErrorResponse is an error response that sometimes gets returned with a 200 code.
 type ProxyErrorResponse struct {
 	// HTTP response that caused this error.
@@ -70,12 +87,7 @@ type ProxyErrorResponse struct {
 	//        "http_status_code": 500
 	//    }
 	//}
-	ProxyError struct {
-		Code           int    `json:"code"`
-		Message        string `json:"message"`
-		Type           string `json:"type"`
-		HttpStatusCode int    `json:"http_status_code"`
-	} `json:"error"`
+	ProxyError ProxyError `json:"error"`
 }
 
 func (r *ProxyErrorResponse) Error() string {
