@@ -526,19 +526,17 @@ func CheckResponse(r *http.Response) error {
 		err.Message = fmt.Sprintf("API rate limit has been exceeded until %s.", err.Rate.Reset)
 		return err
 	}
-	proxyErrorResponse := &ProxyErrorResponse{Response: r}
 
 	data, err := io.ReadAll(r.Body)
 	if err == nil && len(data) > 0 {
+
+		proxyErrorResponse := &ProxyErrorResponse{Response: r}
 		json.Unmarshal(data, proxyErrorResponse)
 		if proxyErrorResponse.Error() != "" {
 			return proxyErrorResponse
 		}
-	}
-	jsonErrorResponse := &JSONErrorResponse{Response: r}
 
-	jsonData, jsonErr := io.ReadAll(r.Body)
-	if jsonErr == nil && len(jsonData) > 0 {
+		jsonErrorResponse := &JSONErrorResponse{Response: r}
 		json.Unmarshal(data, jsonErrorResponse)
 		if len(jsonErrorResponse.JSON.Errors) > 0 {
 			for _, e := range jsonErrorResponse.JSON.Errors {
@@ -547,7 +545,7 @@ func CheckResponse(r *http.Response) error {
 						Response: r,
 						ProxyError: ProxyError{
 							Code:           ErrorSubmitBannedFromSubredditCode,
-							Message:        e.Reason,
+							Message:        jsonErrorResponse.Error(),
 							Type:           ErrorType,
 							HttpStatusCode: r.StatusCode,
 						},
