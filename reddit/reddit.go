@@ -530,9 +530,12 @@ func CheckResponse(r *http.Response) error {
 	data, err := io.ReadAll(r.Body)
 	if err == nil && len(data) > 0 {
 
+		// reset response body
+
 		proxyErrorResponse := &ProxyErrorResponse{Response: r}
 		json.Unmarshal(data, proxyErrorResponse)
 		if proxyErrorResponse.Error() != "" {
+			r.Body = io.NopCloser(bytes.NewReader(data))
 			return proxyErrorResponse
 		}
 
@@ -541,6 +544,7 @@ func CheckResponse(r *http.Response) error {
 		if len(jsonErrorResponse.JSON.Errors) > 0 {
 			for _, e := range jsonErrorResponse.JSON.Errors {
 				if e.Label == ErrorSubmitBannedFromSubredditLabel {
+					r.Body = io.NopCloser(bytes.NewReader(data))
 					return &ProxyErrorResponse{
 						Response: r,
 						ProxyError: ProxyError{
@@ -552,6 +556,7 @@ func CheckResponse(r *http.Response) error {
 					}
 				}
 			}
+			r.Body = io.NopCloser(bytes.NewReader(data))
 			return &ProxyErrorResponse{
 				Response: r,
 				ProxyError: ProxyError{
