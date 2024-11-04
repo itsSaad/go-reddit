@@ -13,9 +13,11 @@ const (
 
 	ErrorCommonLabel                    = "ERROR"
 	ErrorSubmitBannedFromSubredditLabel = "BANNED_FROM_SUBREDDIT"
+	ErrorBlockedLable                   = "BLOCKED"
 
 	ErrorCommonCode                    = 10001
 	ErrorSubmitBannedFromSubredditCode = 10002
+	ErrorBlockedCode                   = 10003
 )
 
 // APIError is an error coming from Reddit.
