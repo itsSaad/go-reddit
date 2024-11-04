@@ -535,15 +535,37 @@ func CheckResponse(r *http.Response) error {
 			return proxyErrorResponse
 		}
 	}
-	//jsonErrorResponse := &JSONErrorResponse{Response: r}
-	//
-	//data, err := ioutil.ReadAll(r.Body)
-	//if err == nil && len(data) > 0 {
-	//	json.Unmarshal(data, jsonErrorResponse)
-	//	if len(jsonErrorResponse.JSON.Errors) > 0 {
-	//		return jsonErrorResponse
-	//	}
-	//}
+	jsonErrorResponse := &JSONErrorResponse{Response: r}
+
+	jsonData, jsonErr := io.ReadAll(r.Body)
+	if jsonErr == nil && len(jsonData) > 0 {
+		json.Unmarshal(data, jsonErrorResponse)
+		if len(jsonErrorResponse.JSON.Errors) > 0 {
+			for _, e := range jsonErrorResponse.JSON.Errors {
+				if e.Label == ErrorSubmitBannedFromSubredditLabel {
+					return &ProxyErrorResponse{
+						Response: r,
+						ProxyError: ProxyError{
+							Code:           ErrorSubmitBannedFromSubredditCode,
+							Message:        e.Reason,
+							Type:           ErrorType,
+							HttpStatusCode: r.StatusCode,
+						},
+					}
+				}
+			}
+			return &ProxyErrorResponse{
+				Response: r,
+				ProxyError: ProxyError{
+					Code:           ErrorCommonCode,
+					Message:        jsonErrorResponse.Error(),
+					Type:           ErrorType,
+					HttpStatusCode: r.StatusCode,
+				},
+			}
+			//return jsonErrorResponse
+		}
+	}
 
 	// reset response body
 	r.Body = io.NopCloser(bytes.NewReader(data))
