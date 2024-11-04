@@ -571,22 +571,47 @@ func CheckResponse(r *http.Response) error {
 	}
 
 	// reset response body
-	r.Body = io.NopCloser(bytes.NewReader(data))
 
 	if c := r.StatusCode; c >= 200 && c <= 299 {
+		r.Body = io.NopCloser(bytes.NewReader(data))
 		return nil
-	}
-
-	errorResponse := &ErrorResponse{Response: r}
-	data, err = io.ReadAll(r.Body)
-	if err == nil && len(data) > 0 {
-		err := json.Unmarshal(data, errorResponse)
-		if err != nil {
-			errorResponse.Message = string(data)
+	} else {
+		if strings.Contains(strings.ToLower(string(data)), "<title>blocked</title>") {
+			r.Body = io.NopCloser(bytes.NewReader(data))
+			return &ProxyErrorResponse{
+				Response: r,
+				ProxyError: ProxyError{
+					Code:           ErrorBlockedCode,
+					Message:        ErrorBlockedLable,
+					Type:           ErrorType,
+					HttpStatusCode: r.StatusCode,
+				},
+			}
+		} else {
+			r.Body = io.NopCloser(bytes.NewReader(data))
+			return &ProxyErrorResponse{
+				Response: r,
+				ProxyError: ProxyError{
+					Code:           ErrorCommonCode,
+					Message:        ErrorCommonLabel,
+					Type:           ErrorType,
+					HttpStatusCode: r.StatusCode,
+				},
+			}
 		}
+
 	}
 
-	return errorResponse
+	//errorResponse := &ErrorResponse{Response: r}
+	//data, err = io.ReadAll(r.Body)
+	//if err == nil && len(data) > 0 {
+	//	err := json.Unmarshal(data, errorResponse)
+	//	if err != nil {
+	//		errorResponse.Message = string(data)
+	//	}
+	//}
+	//
+	//return errorResponse
 }
 
 // Rate represents the rate limit for the client.
