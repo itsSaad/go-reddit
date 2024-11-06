@@ -554,6 +554,17 @@ func CheckResponse(r *http.Response) error {
 							HttpStatusCode: r.StatusCode,
 						},
 					}
+				} else if e.Label == ErrorRateLimitLabel {
+					r.Body = io.NopCloser(bytes.NewReader(data))
+					return &ProxyErrorResponse{
+						Response: r,
+						ProxyError: ProxyError{
+							Code:           ErrorRateLimitCode,
+							Message:        jsonErrorResponse.Error(),
+							Type:           ErrorType,
+							HttpStatusCode: r.StatusCode,
+						},
+					}
 				}
 			}
 			r.Body = io.NopCloser(bytes.NewReader(data))
