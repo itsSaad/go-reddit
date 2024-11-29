@@ -25,11 +25,12 @@ type User struct {
 	PostKarma    int `json:"link_karma"`
 	CommentKarma int `json:"comment_karma"`
 
-	IsFriend         bool `json:"is_friend"`
-	IsEmployee       bool `json:"is_employee"`
-	HasVerifiedEmail bool `json:"has_verified_email"`
-	NSFW             bool `json:"over_18"`
-	IsSuspended      bool `json:"is_suspended"`
+	IsFriend         bool              `json:"is_friend"`
+	IsEmployee       bool              `json:"is_employee"`
+	HasVerifiedEmail bool              `json:"has_verified_email"`
+	NSFW             bool              `json:"over_18"`
+	IsSuspended      bool              `json:"is_suspended"`
+	Subreddit        SubredditSettings `json:"subreddit"`
 }
 
 // UserSummary represents a Reddit user, but

@@ -528,9 +528,12 @@ func (s *SubredditService) SearchNames(ctx context.Context, query string) ([]str
 // SearchPosts searches for posts in the specified subreddit.
 // To search through multiple, separate the names with a plus (+), e.g. "golang+test".
 // If no subreddit is provided, the search is run against r/all.
-func (s *SubredditService) SearchPosts(ctx context.Context, query string, subreddit string, opts *ListPostSearchOptions) ([]*Post, *Response, error) {
+func (s *SubredditService) SearchPosts(ctx context.Context, query, searchType, subreddit string, opts *ListPostSearchOptions) ([]*Post, *Response, error) {
 	if subreddit == "" {
 		subreddit = "all"
+	}
+	if searchType == "" {
+		searchType = "link"
 	}
 
 	path := fmt.Sprintf("r/%s/search", subreddit)
@@ -543,8 +546,9 @@ func (s *SubredditService) SearchPosts(ctx context.Context, query string, subred
 
 	params := struct {
 		Query              string `url:"q"`
+		Type               string `url:"type,omitempty"`
 		RestrictSubreddits bool   `url:"restrict_sr,omitempty"`
-	}{query, notAll}
+	}{query, searchType, notAll}
 
 	t, resp, err := s.client.getThing(ctx, path, params)
 	if err != nil {

@@ -33,16 +33,41 @@ func setup(t testing.TB) (*Client, *http.ServeMux) {
 		w.Header().Add(headerContentType, mediaTypeJSON)
 		fmt.Fprint(w, response)
 	})
-
 	client, _ := NewClient(
-		Credentials{"id1", "secret1", "user1", "password1"},
-		WithBaseURL(server.URL),
-		WithTokenURL(server.URL+"/api/v1/access_token"),
+		Credentials{"client_id", "client_secret", "", ""},
+		//WithAccessToken("access_token_value"),
 	)
-
+	client.InitializeUserAgent("user_agent_value")
+	client.InitializeAccessToken("access_token_value")
 	return client, mux
 }
 
+func setupAsync(t testing.TB) (*Client, *http.ServeMux) {
+	mux := http.NewServeMux()
+
+	server := httptest.NewServer(mux)
+	t.Cleanup(server.Close)
+
+	mux.HandleFunc("/api/v1/access_token", func(w http.ResponseWriter, r *http.Request) {
+		response := `{
+			"access_token": "token1",
+			"token_type": "bearer",
+			"expires_in": 3600,
+			"scope": "*"
+		}`
+		w.Header().Add(headerContentType, mediaTypeJSON)
+		fmt.Fprint(w, response)
+	})
+	fmt.Println("server.URL:", server.URL)
+	client, _ := NewClientAsync(
+		WithBaseURL("proxy_base_url"),
+		//WithBearerAuth("proxy_api_key"),
+	)
+
+	client.InitializeAccessToken("access_token_value")
+
+	return client, mux
+}
 func readFileContents(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {

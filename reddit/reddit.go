@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	libraryName    = "github.com/vartanbeno/go-reddit"
+	libraryName    = "github.com/bitcomputing/go-reddit"
 	libraryVersion = "2.0.0"
 
 	defaultBaseURL         = "https://oauth.reddit.com"
@@ -30,9 +30,10 @@ const (
 	mediaTypeJSON = "application/json"
 	mediaTypeForm = "application/x-www-form-urlencoded"
 
-	headerContentType = "Content-Type"
-	headerAccept      = "Accept"
-	headerUserAgent   = "User-Agent"
+	headerContentType   = "Content-Type"
+	headerAccept        = "Accept"
+	headerUserAgent     = "User-Agent"
+	headerAuthorization = "Authorization"
 
 	headerRateLimitRemaining = "x-ratelimit-remaining"
 	headerRateLimitUsed      = "x-ratelimit-used"
@@ -70,10 +71,16 @@ type Client struct {
 	rateMu sync.Mutex
 	rate   Rate
 
+	isSync bool
+
 	ID       string
 	Secret   string
 	Username string
 	Password string
+
+	AccessToken string
+
+	BearerToken string
 
 	// This is the client's user ID in Reddit's database.
 	redditID string
@@ -99,6 +106,26 @@ type Client struct {
 	oauth2Transport *oauth2.Transport
 
 	onRequestCompleted RequestCompletionCallback
+}
+
+func (c *Client) InitializeClientIdClientSecret(clientId, clientSecret string) {
+	c.ID = clientId
+	c.Secret = clientSecret
+}
+
+func (c *Client) InitializeUserAgent(userAgent string) {
+
+	userAgentTransport := &userAgentTransport{
+		userAgent: userAgent,
+		Base:      c.client.Transport,
+	}
+	c.client.Transport = userAgentTransport
+}
+
+func (c *Client) InitializeAccessToken(accessToken string) {
+
+	oauthTransport := oauthTransport(c, accessToken)
+	c.client.Transport = oauthTransport
 }
 
 // OnRequestCompleted sets the client's request completion callback.
@@ -153,18 +180,44 @@ func NewClient(credentials Credentials, opts ...Opt) (*Client, error) {
 		}
 	}
 
-	userAgentTransport := &userAgentTransport{
-		userAgent: client.UserAgent(),
-		Base:      client.client.Transport,
-	}
-	client.client.Transport = userAgentTransport
+	//userAgentTransport := &userAgentTransport{
+	//	userAgent: client.UserAgent(),
+	//	Base:      client.client.Transport,
+	//}
+	//client.client.Transport = userAgentTransport
+	//
+	//if client.client.CheckRedirect == nil {
+	//	client.client.CheckRedirect = client.redirect
+	//}
+	//
+	//oauthTransport := oauthTransport(client)
+	//client.client.Transport = oauthTransport
+	return client, nil
+}
 
-	if client.client.CheckRedirect == nil {
-		client.client.CheckRedirect = client.redirect
+// NewClient returns a new Reddit API client.
+// Use an Opt to configure the client credentials, such as WithHTTPClient or WithUserAgent.
+// If the FromEnv option is used with the correct environment variables, an empty struct can
+// be passed in as the credentials, since they will be overridden.
+func NewClientAsync(opts ...Opt) (*Client, error) {
+	client := newClient()
+	client.isSync = true
+
+	for _, opt := range opts {
+		if err := opt(client); err != nil {
+			return nil, err
+		}
 	}
 
-	oauthTransport := oauthTransport(client)
-	client.client.Transport = oauthTransport
+	//authorizationTransport := &authorizationTransport{
+	//	Bearer: client.BearerToken,
+	//	Base:   client.client.Transport,
+	//}
+	//client.client.Transport = authorizationTransport
+	//
+	//if client.client.CheckRedirect == nil {
+	//	client.client.CheckRedirect = client.redirect
+	//}
 
 	return client, nil
 }
@@ -303,6 +356,9 @@ type Response struct {
 
 	// Rate limit information.
 	Rate Rate
+
+	// JobId async job id.
+	JobId string
 }
 
 // newResponse creates a new Response for the provided http.Response.
@@ -314,6 +370,10 @@ func newResponse(r *http.Response) *Response {
 
 func (r *Response) populateAnchors(a anchor) {
 	r.After = a.After()
+}
+
+func (r *Response) jobResponse(job JobResponse) {
+	r.JobId = job.JobID
 }
 
 // parseRate parses the rate related headers.
@@ -373,14 +433,31 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 				return response, err
 			}
 		} else {
+			buffer, err := io.ReadAll(response.Body)
+			if err != nil {
+				return response, err
+			}
+			//重新给response.Body赋值
+			response.Body = io.NopCloser(bytes.NewReader(buffer))
 			err = json.NewDecoder(response.Body).Decode(v)
 			if err != nil {
 				return response, err
 			}
+			//重新给response.Body赋值
+			response.Body = io.NopCloser(bytes.NewReader(buffer))
 		}
 
 		if anchor, ok := v.(anchor); ok {
 			response.populateAnchors(anchor)
+		}
+	}
+	if c.isSync {
+		var job JobResponse
+		err = json.NewDecoder(response.Body).Decode(&job)
+		if err != nil {
+			return response, err
+		} else {
+			response.jobResponse(job)
 		}
 	}
 
@@ -450,33 +527,102 @@ func CheckResponse(r *http.Response) error {
 		return err
 	}
 
-	jsonErrorResponse := &JSONErrorResponse{Response: r}
-
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err == nil && len(data) > 0 {
+
+		// reset response body
+
+		proxyErrorResponse := &ProxyErrorResponse{Response: r}
+		json.Unmarshal(data, proxyErrorResponse)
+		if proxyErrorResponse.Error() != "" {
+			r.Body = io.NopCloser(bytes.NewReader(data))
+			return proxyErrorResponse
+		}
+
+		jsonErrorResponse := &JSONErrorResponse{Response: r}
 		json.Unmarshal(data, jsonErrorResponse)
 		if len(jsonErrorResponse.JSON.Errors) > 0 {
-			return jsonErrorResponse
+			for _, e := range jsonErrorResponse.JSON.Errors {
+				if e.Label == ErrorSubmitBannedFromSubredditLabel {
+					r.Body = io.NopCloser(bytes.NewReader(data))
+					return &ProxyErrorResponse{
+						Response: r,
+						ProxyError: ProxyError{
+							Code:           ErrorSubmitBannedFromSubredditCode,
+							Message:        jsonErrorResponse.Error(),
+							Type:           ErrorType,
+							HttpStatusCode: r.StatusCode,
+						},
+					}
+				} else if e.Label == ErrorRateLimitLabel {
+					r.Body = io.NopCloser(bytes.NewReader(data))
+					return &ProxyErrorResponse{
+						Response: r,
+						ProxyError: ProxyError{
+							Code:           ErrorRateLimitCode,
+							Message:        jsonErrorResponse.Error(),
+							Type:           ErrorType,
+							HttpStatusCode: r.StatusCode,
+						},
+					}
+				}
+			}
+			r.Body = io.NopCloser(bytes.NewReader(data))
+			return &ProxyErrorResponse{
+				Response: r,
+				ProxyError: ProxyError{
+					Code:           ErrorCommonCode,
+					Message:        jsonErrorResponse.Error(),
+					Type:           ErrorType,
+					HttpStatusCode: r.StatusCode,
+				},
+			}
+			//return jsonErrorResponse
 		}
 	}
 
 	// reset response body
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 
 	if c := r.StatusCode; c >= 200 && c <= 299 {
+		r.Body = io.NopCloser(bytes.NewReader(data))
 		return nil
-	}
-
-	errorResponse := &ErrorResponse{Response: r}
-	data, err = ioutil.ReadAll(r.Body)
-	if err == nil && len(data) > 0 {
-		err := json.Unmarshal(data, errorResponse)
-		if err != nil {
-			errorResponse.Message = string(data)
+	} else {
+		if strings.Contains(strings.ToLower(string(data)), "<title>blocked</title>") {
+			r.Body = io.NopCloser(bytes.NewReader(data))
+			return &ProxyErrorResponse{
+				Response: r,
+				ProxyError: ProxyError{
+					Code:           ErrorBlockedCode,
+					Message:        ErrorBlockedLable,
+					Type:           ErrorType,
+					HttpStatusCode: r.StatusCode,
+				},
+			}
+		} else {
+			r.Body = io.NopCloser(bytes.NewReader(data))
+			return &ProxyErrorResponse{
+				Response: r,
+				ProxyError: ProxyError{
+					Code:           ErrorCommonCode,
+					Message:        ErrorCommonLabel,
+					Type:           ErrorType,
+					HttpStatusCode: r.StatusCode,
+				},
+			}
 		}
+
 	}
 
-	return errorResponse
+	//errorResponse := &ErrorResponse{Response: r}
+	//data, err = io.ReadAll(r.Body)
+	//if err == nil && len(data) > 0 {
+	//	err := json.Unmarshal(data, errorResponse)
+	//	if err != nil {
+	//		errorResponse.Message = string(data)
+	//	}
+	//}
+	//
+	//return errorResponse
 }
 
 // Rate represents the rate limit for the client.
